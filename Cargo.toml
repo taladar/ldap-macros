@@ -1,0 +1,58 @@
+[package]
+name = "ldap-macros"
+description = "Macros to make conversion from LDAP query results to Rust data types easier when using the ldap-utils and ldap-types crates with ldap3"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+version = "0.1.0"
+authors = ["Matthias Hörmann <matthias.hoermann@saltation.com>"]
+edition = "2021"
+publish = false
+keywords = ["ldap", "schema", "ldap3"]
+categories = ["parsing"]
+exclude = [".env", "tarpaulin-report.html", "tarpaulin-report.json"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+convert_case = "0.8.0"
+quote = "1.0.39"
+syn = "2.0.99"
+
+[lints.rust]
+unknown_lints = "deny"
+renamed_and_removed_lints = "deny"
+unsafe_code = "forbid"
+deprecated = "deny"
+private_interfaces = "forbid"
+private_bounds = "forbid"
+non_fmt_panics = "forbid"
+unreachable_code = "deny"
+unreachable_patterns = "deny"
+unused_doc_comments = "forbid"
+unused_must_use = "forbid"
+while_true = "deny"
+unused_parens = "deny"
+redundant_semicolons = "deny"
+non_ascii_idents = "deny"
+confusable_idents = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+missing_docs_in_private_items = "warn"
+cargo_common_metadata = "warn"
+mod_module_files = "deny"
+#pedantic = "warn"
+redundant_else = "warn"
+must_use_candidate = "warn"
+missing_panics_doc = "warn"
+missing_errors_doc = "warn"
+panic = "warn"
+unwrap_used = "warn"
+expect_used = "warn"
+incompatible_msrv = "deny"
+
+[lints.rustdoc]
+missing_crate_level_docs = "warn"
+broken_intra_doc_links = "deny"
