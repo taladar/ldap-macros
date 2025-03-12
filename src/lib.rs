@@ -8,8 +8,8 @@ use syn::spanned::Spanned;
 pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let args = syn::parse_macro_input!(input with syn::punctuated::Punctuated<syn::Expr, syn::Token![,]>::parse_terminated);
 
-    if args.len() != 5 {
-        return quote::quote! { compile_error!("Expected 5 arguments (ldap client handle, base dn, scope, filter, attributes)") }.into();
+    if args.len() != 7 {
+        return quote::quote! { compile_error!("Expected 7 arguments (ldap client handle, base dn, scope, filter, attributes, return type, body)") }.into();
     }
 
     let ldap_client_handle = &args[0];
@@ -17,12 +17,36 @@ pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let scope = &args[2];
     let filter = &args[3];
     let attributes = &args[4];
+    let return_type = &args[5];
+    let body = &args[6];
 
     let syn::Expr::Array(attributes) = attributes else {
         return quote::quote! { compile_error!("Expected fifth argument to be an array of attribute specifiers (attribute name as Rust type)") }.into();
     };
 
+    let syn::Expr::Lit(syn::ExprLit {
+        attrs: _,
+        lit: syn::Lit::Str(return_type),
+    }) = return_type
+    else {
+        return quote::quote! { compile_error!("Expected sixth argument to be a literal String containing a Rust type") }.into();
+    };
+
+    let Ok(return_type): Result<syn::Type, syn::Error> = syn::parse_str(&return_type.value())
+    else {
+        return quote::quote! { compile_error!("Expected sixth argument to be a literal String containing a Rust type") }.into();
+    };
+
+    let mut attribute_names = Vec::new();
     let mut attribute_handlers = Vec::new();
+    let mut attribute_definition_parameters = Vec::new();
+    let mut attribute_call_parameters = Vec::new();
+    attribute_definition_parameters.push(quote::quote! {
+        dn: ldap_types::basic::DistinguishedName
+    });
+    attribute_call_parameters.push(quote::quote! {
+        dn
+    });
     for elem in &attributes.elems {
         let span = elem.span();
         let syn::Expr::Lit(syn::ExprLit {
@@ -57,9 +81,18 @@ pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         };
         let attribute_rust_type = *attribute_cast.ty;
         let attribute_rust_variable = syn::Ident::new(&attribute_name.to_case(Case::Snake), span);
+        attribute_names.push(quote::quote! {
+            #attribute_name
+        });
         attribute_handlers.push(quote::quote! {
             let #attribute_rust_variable: #attribute_rust_type =
                 <#attribute_rust_type as ldap_types::conversion::FromLdapType>::parse(<ldap3::SearchEntry as ldap_types::conversion::SearchEntryExt>::attribute_results(&entry, #attribute_name))?;
+        });
+        attribute_definition_parameters.push(quote::quote! {
+            #attribute_rust_variable: #attribute_rust_type
+        });
+        attribute_call_parameters.push(quote::quote! {
+            #attribute_rust_variable
         });
     }
 
@@ -69,15 +102,19 @@ pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             #base_dn,
             #scope,
             #filter,
-            vec!#attributes
+            vec![#(#attribute_names),*],
         ).await?;
 
+        let mut generated_ldap_search_entry_handler = async |#(#attribute_definition_parameters),*| -> #return_type #body;
+
         for entry in it {
+            let dn : ldap_types::basic::DistinguishedName = entry.dn.clone().try_into()?;
             #(#attribute_handlers)*
+            generated_ldap_search_entry_handler(#(#attribute_call_parameters),*).await?;
         }
     };
 
-    println!("Macro output:\n{}", output);
+    //println!("Macro output:\n{}", output);
 
     proc_macro::TokenStream::from(output)
 }
