@@ -3,7 +3,7 @@ name = "ldap-macros"
 description = "Macros to make conversion from LDAP query results to Rust data types easier when using the ldap-utils and ldap-types crates with ldap3"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Matthias Hörmann <matthias.hoermann@saltation.com>"]
 edition = "2021"
 repository = "https://github.com/taladar/ldap-macros"
@@ -56,3 +56,9 @@ incompatible_msrv = "deny"
 [lints.rustdoc]
 missing_crate_level_docs = "warn"
 broken_intra_doc_links = "deny"
+
+[dev-dependencies]
+ldap-types = "0.6.0"
+ldap-utils = "0.5.1"
+ldap3 = "0.11.5"
+tokio = { version = "1.44.0", features = ["full"] }

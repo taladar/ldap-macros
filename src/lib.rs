@@ -4,6 +4,47 @@ use convert_case::{Case, Casing};
 use syn::spanned::Spanned;
 
 /// Performs an LDAP search and converts the result into suitable Rust types
+///
+/// the first few parameters are the same as in the function version of ldap_search
+/// from the ldap-utils crate (and indeed they are just passed through to that)
+///
+/// Where this starts to differ is the attribute list, each attribute name has
+/// a Rust type, either a Vec (for multi-valued attributes), an Option
+/// (for optional single-valued attributes) or a bare type implementing the
+/// `ldap_types::conversion::FromStringLdapType` trait for values converting
+/// from the string attributes or each of those wrapped in
+/// `ldap_types::conversion::Binary` and implementing
+/// `ldap_types::conversion::FromBinaryLdapType` for values converting from
+/// binary attributes.
+///
+/// Unwrapping the Binary part needs to happen manually for now.
+///
+/// The attribute names are converted to snake case for variable names and under
+/// the hood an async function is generated with the specified return type and
+/// body. In addition to the attributes the function also gets a parameter dn
+/// for the entry DN as a `ldap_types::basic::DistinguishedName`
+///
+///
+/// ```
+/// #[tokio::main]
+/// pub async fn main() -> Result<(), Box<dyn std::error::Error>> {
+///     let (mut ldap, base_dn) = ldap_utils::connect().await?;
+///     ldap_macros::ldap_search!(
+///         &mut ldap,
+///         &base_dn,
+///         ldap3::Scope::Subtree,
+///         "(objectclass=fooBar)",
+///         [ "fooAttribute as usize", "barAttribute as Option<bool>", "bazAttribute as Vec<String>", "quuxAttribute as ldap_types::conversion::Binary<Vec<u8>>" ],
+///         "Result<(), Box<dyn std::error::Error>>",
+///         {
+///             let ldap_types::conversion::Binary(quux_attribute) = quux_attribute;
+///             println!("DN: {}, foo: {}, bar: {:?}, baz: {:?}, quux: {:?}", dn, foo_attribute, bar_attribute, baz_attribute, quux_attribute);
+///             Ok(())
+///         }
+///     );
+///     Ok(())
+/// }
+/// ```
 #[proc_macro]
 pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let args = syn::parse_macro_input!(input with syn::punctuated::Punctuated<syn::Expr, syn::Token![,]>::parse_terminated);
