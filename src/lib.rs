@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 
-use convert_case::{Case, Casing};
-use syn::spanned::Spanned;
+use convert_case::{Case, Casing as _};
+use syn::spanned::Spanned as _;
 
 /// Performs an LDAP search and converts the result into suitable Rust types
 ///
@@ -49,17 +49,48 @@ use syn::spanned::Spanned;
 pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let args = syn::parse_macro_input!(input with syn::punctuated::Punctuated<syn::Expr, syn::Token![,]>::parse_terminated);
 
-    if args.len() != 7 {
-        return quote::quote! { compile_error!("Expected 7 arguments (ldap client handle, base dn, scope, filter, attributes, return type, body)") }.into();
-    }
-
-    let ldap_client_handle = &args[0];
-    let base_dn = &args[1];
-    let scope = &args[2];
-    let filter = &args[3];
-    let attributes = &args[4];
-    let return_type = &args[5];
-    let body = &args[6];
+    let Some(ldap_client_handle) = args.get(0) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing first argument: ldap client handle");
+        }
+        .into();
+    };
+    let Some(base_dn) = args.get(1) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing second argument: base dn");
+        }
+        .into();
+    };
+    let Some(scope) = args.get(2) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing third argument: scope");
+        }
+        .into();
+    };
+    let Some(filter) = args.get(3) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing fourth argument: filter");
+        }
+        .into();
+    };
+    let Some(attributes) = args.get(4) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing fifth argument: attributes (array of attribute specifiers)");
+        }
+        .into();
+    };
+    let Some(return_type) = args.get(5) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing sixth argument: return type (literal String)");
+        }
+        .into();
+    };
+    let Some(body) = args.get(6) else {
+        return quote::quote_spanned! { args.span() =>
+            compile_error!("Missing seventh argument: body (code block)");
+        }
+        .into();
+    };
 
     let syn::Expr::Array(attributes) = attributes else {
         return quote::quote! { compile_error!("Expected fifth argument to be an array of attribute specifiers (attribute name as Rust type)") }.into();
