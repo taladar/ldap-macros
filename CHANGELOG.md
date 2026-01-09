@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-01-09 12:09:14Z
+
+### 🐛 Bug Fixes
+
+- *(ldap_search)* Make future Send in ldap_search!()
+
 ## 0.2.0 - 2026-01-09 11:53:55Z
 
 ### 🚀 Features
