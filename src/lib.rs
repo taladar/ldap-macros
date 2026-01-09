@@ -177,9 +177,12 @@ pub fn ldap_search(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             vec![#(#attribute_names),*],
         ).await?;
 
+        // Collect into a Vec to remove the lifetime dependency and make the future Send
+        let entries: Vec<ldap3::SearchEntry> = it.collect();
+
         let mut generated_ldap_search_entry_handler = async |#(#attribute_definition_parameters),*| -> #return_type #body;
 
-        for entry in it {
+        for entry in entries { // Iterate over the collected Vec
             let dn : ldap_types::basic::DistinguishedName = entry.dn.clone().try_into()?;
             #(#attribute_handlers)*
             generated_ldap_search_entry_handler(#(#attribute_call_parameters),*).await?;
