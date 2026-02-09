@@ -15,13 +15,13 @@ exclude = [".env", "tarpaulin-report.html", "tarpaulin-report.json"]
 proc-macro = true
 
 [dependencies]
-convert_case = "0.10.0"
-quote = "1.0.43"
+convert_case = "0.11.0"
+quote = "1.0.44"
 syn = { version = "2.0.114", features = ["full"] }
 
 [dev-dependencies]
-ldap-types = "0.7.1"
-ldap-utils = "0.6.1"
+ldap-types = "0.7.2"
+ldap-utils = "0.6.2"
 ldap3 = "0.12.1"
 tokio = { version = "1.49.0", features = ["full"] }
 
