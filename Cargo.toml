@@ -21,10 +21,10 @@ quote = "1.0.45"
 syn = { version = "2.0.117", features = ["full"] }
 
 [dev-dependencies]
-ldap-types = "0.7.2"
-ldap-utils = "0.6.4"
+ldap-types = "0.7.3"
+ldap-utils = "0.6.5"
 ldap3 = "0.12.1"
-tokio = { version = "1.51.0", features = ["full"] }
+tokio = { version = "1.52.3", features = ["full"] }
 
 [lints.rust]
 absolute_paths_not_starting_with_crate = "deny"
