@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.5 - 2026-06-08 12:32:32Z
+
+### ⚙️ Miscellaneous Tasks
+
+- *(template)* Sync project to latest rust-templates standards
+- *(template)* Sync release.sh with latest proc-macro template
+- *(dependencies)* Update dependencies
+
 ## 0.2.4 - 2026-04-07 14:22:50Z
 
 ### ⚙️ Miscellaneous Tasks
