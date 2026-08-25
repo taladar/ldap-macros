@@ -17,14 +17,14 @@ proc-macro = true
 
 [dependencies]
 convert_case = "0.11.0"
-quote = "1.0.45"
-syn = { version = "2.0.117", features = ["full"] }
+quote = "1.0.47"
+syn = { version = "3.0.4", features = ["full"] }
 
 [dev-dependencies]
-ldap-types = "0.7.3"
-ldap-utils = "0.6.5"
+ldap-types = "0.7.4"
+ldap-utils = "0.6.6"
 ldap3 = "0.12.1"
-tokio = { version = "1.52.3", features = ["full"] }
+tokio = { version = "1.53.1", features = ["full"] }
 
 [lints.rust]
 absolute_paths_not_starting_with_crate = "deny"
