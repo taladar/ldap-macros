@@ -649,7 +649,7 @@ dependencies = [
 
 [[package]]
 name = "ldap-macros"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "convert_case",
  "ldap-types",
