@@ -16,15 +16,15 @@ exclude = [".env", "tarpaulin-report.html", "tarpaulin-report.json"]
 proc-macro = true
 
 [dependencies]
-convert_case = "0.11.0"
+convert_case = "0.12.0"
 quote = "1.0.47"
-syn = { version = "3.0.4", features = ["full"] }
+syn = { version = "3.0.9", features = ["full"] }
 
 [dev-dependencies]
 ldap-types = "0.7.4"
 ldap-utils = "0.6.6"
 ldap3 = "0.12.1"
-tokio = { version = "1.53.1", features = ["full"] }
+tokio = { version = "1.54.0", features = ["full"] }
 
 [lints.rust]
 absolute_paths_not_starting_with_crate = "deny"
