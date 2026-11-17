@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 - 2026-11-17 15:09:03Z
+
+### ⚙️ Miscellaneous Tasks
+
+- *(dependencies)* Update ldap-utils to 0.8.0
+
 ## 0.3.0 - 2026-11-16 16:27:56Z
 
 ### ⚙️ Miscellaneous Tasks
